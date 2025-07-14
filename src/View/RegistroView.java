@@ -1,57 +1,139 @@
 package View;
 
-
+import Model.Personas;
+import Model.PersonasDAO;
 import javax.swing.JComboBox;
 import Model.Programas;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 
 public class RegistroView extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(RegistroView.class.getName());
+
     public RegistroView() {
-        
-        
         //conposicion de ventana
         initComponents();
         setResizable(false);
         setTitle("registro de usuarios");
-        setLocationRelativeTo(null);    
-}
+        setLocationRelativeTo(null);
 
-        //CAPTURAR DATOS
-        public javax.swing.JTextField getTxtNombre() {
-            return txtNombre;
-        }
-        public javax.swing.JTextField getTxtRut() {
-            return txtRut;
-        }
-        public javax.swing.JTextField getTxtFono() {
-            return txtFono;
-        }
-        
-        public JPanel getJpanAgregar() {
-            return jpanAgregar;
-        }
-        
-        public JPanel getJpanTruncar() {
-            return jpanTruncar;
-        }
-        
-        public void limpiarCampos() {
-            txtNombre.setText("");
-            txtRut.setText("");
-            txtFono.setText("");
-        }
-        
-        public javax.swing.JTable getTablePersonas() {
-            return tablePersonas;
-        }
-        
-        public JComboBox<Programas> getComboProgramas() {
-            return comboProgramas;
-        }
+        txtNombre.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (Character.isDigit(c)) {
+                    e.consume();
+                }
+            }
+        });
 
+        txtRut.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // Evitar borrar el primer dígito con Backspace o Supr
+                if (e.getKeyCode() == KeyEvent.VK_PERIOD) {
+                    e.consume();
+                }
+            }
+        });
 
+        txtFono.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String texto = getTxtFono().getText();
+                char c = e.getKeyChar();
+
+                // Evitar que Reemplacen el primer dígito
+                if (txtFono.getCaretPosition() == 0) {
+                    e.consume();
+                }
+                // Bloquear si ya hay 8 dígitos
+                if (texto.length() >= 9) {
+                    e.consume();
+                }
+                // Permitir solo números
+                if (Character.isAlphabetic(c)) {
+                    e.consume();
+                }
+            }
+
+            public void keyPressed(KeyEvent e) {
+                // Evitar borrar con Backspace
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE && txtFono.getCaretPosition() == 1) {
+                    e.consume();
+                }
+                // Evitar borrar con Suprimir
+                if (e.getKeyCode() == KeyEvent.VK_DELETE && txtFono.getCaretPosition() == 0) {
+                    e.consume();
+                }
+            }
+        });
+
+    }
+
+    //CAPTURAR DATOS
+    public javax.swing.JTextField getTxtNombre() {
+        return txtNombre;
+    }
+
+    public javax.swing.JTextField getTxtRut() {
+        return txtRut;
+    }
+
+    public javax.swing.JTextField getTxtFono() {
+        return txtFono;
+    }
+
+    public JPanel getJpanAgregar() {
+        return jpanAgregar;
+    }
+
+    public javax.swing.JTable getTablePersonas() {
+        return tablePersonas;
+    }
+
+    public JComboBox<Programas> getComboProgramas() {
+        return comboProgramas;
+    }
+
+    //--METODOS--
+    public void limpiarCampos() {
+        txtNombre.setText("");
+        txtRut.setText("");
+        txtFono.setText("");
+    }
+
+    public void cargarTablaPersonas() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Nombre");
+        model.addColumn("RUT");
+        model.addColumn("Teléfono");
+        model.addColumn("Progama");
+        model.addColumn("fecha");
+
+        // ESTABLECER EL MODELO EN LA TABLA
+        tablePersonas.setModel(model);
+
+        // INSTANCIAR DAO
+        PersonasDAO dao = new PersonasDAO();
+        List<Personas> lista = dao.listPersonas();
+
+        // AGREGAR UN OBJETO PERSONA AL MODELO
+        for (Personas persona : lista) {
+            Object[] fila = {
+                persona.getNombre(),
+                persona.getRut(),
+                persona.getTelefono(),
+                persona.getNombre_progama(),
+                persona.getFecha()
+            };
+            model.addRow(fila);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -73,8 +155,6 @@ public class RegistroView extends javax.swing.JFrame {
         txtRut = new javax.swing.JTextField();
         txtFono = new javax.swing.JTextField();
         comboProgramas = new javax.swing.JComboBox<>();
-        jpanTruncar = new javax.swing.JPanel();
-        lblAñadir1 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -158,34 +238,35 @@ public class RegistroView extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(0, 32, 96));
         jLabel4.setText("Progama");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 220, -1, -1));
-        jPanel2.add(txtNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 45, 250, -1));
-        jPanel2.add(txtRut, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 115, 250, -1));
-        jPanel2.add(txtFono, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 180, 250, -1));
 
+        txtNombre.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jPanel2.add(txtNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 45, 250, 30));
+
+        txtRut.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jPanel2.add(txtRut, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 115, 250, 30));
+
+        txtFono.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        txtFono.setText("9");
+        txtFono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFonoActionPerformed(evt);
+            }
+        });
+        jPanel2.add(txtFono, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 180, 250, 30));
+
+        comboProgramas.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         comboProgramas.setModel(comboProgramas.getModel());
         comboProgramas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboProgramasActionPerformed(evt);
             }
         });
-        jPanel2.add(comboProgramas, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 246, 250, -1));
-
-        jpanTruncar.setBackground(new java.awt.Color(255, 192, 0));
-        jpanTruncar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        lblAñadir1.setBackground(new java.awt.Color(255, 192, 0));
-        lblAñadir1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        lblAñadir1.setForeground(new java.awt.Color(255, 0, 51));
-        lblAñadir1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblAñadir1.setText("Vaciar tabla");
-        jpanTruncar.add(lblAñadir1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
-
-        jPanel2.add(jpanTruncar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 280, 130, 40));
+        jPanel2.add(comboProgramas, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 246, 250, 30));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 290, 360));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 8)); // NOI18N
-        jLabel6.setText("alpha 0.1");
+        jLabel6.setText("alpha 0.2");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 450, -1, -1));
 
         pack();
@@ -194,6 +275,10 @@ public class RegistroView extends javax.swing.JFrame {
     private void comboProgramasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboProgramasActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_comboProgramasActionPerformed
+
+    private void txtFonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFonoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFonoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -218,7 +303,7 @@ public class RegistroView extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new RegistroView().setVisible(true));
- 
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -234,9 +319,7 @@ public class RegistroView extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JPanel jpanAgregar;
-    public javax.swing.JPanel jpanTruncar;
     public javax.swing.JLabel lblAñadir;
-    public javax.swing.JLabel lblAñadir1;
     private javax.swing.JTable tablePersonas;
     private javax.swing.JTextField txtFono;
     private javax.swing.JTextField txtNombre;

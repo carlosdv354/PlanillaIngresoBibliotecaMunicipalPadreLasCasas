@@ -7,18 +7,20 @@ public class Personas {
     private String telefono;
     private String id_programa;
     private String nombre_progama;
+    private String fecha;
  
 
     public Personas() {
     }
 
-    public Personas(int id, String nombre, String rut, String telefono, String id_programa, String nombre_progama) {
+    public Personas(int id, String nombre, String rut, String telefono, String id_programa, String nombre_progama, String fecha) {
         this.id = id;
         this.nombre = nombre;
         this.rut = rut;
         this.telefono = telefono;
         this.id_programa = id_programa;
         this.nombre_progama = nombre_progama;
+        this.fecha = fecha;
     }
     
     public  Personas(String nombre, String rut, String telefono, String id_programa) {
@@ -75,6 +77,13 @@ public class Personas {
     public void setNombre_progama(String nombre_progama) {
         this.nombre_progama = nombre_progama;
     }
-    
-    
+
+    public String getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
+
 }

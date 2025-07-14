@@ -8,7 +8,7 @@ public class ConnectionMySQL {
 
     private static final String data_base = "ingresosdb";
     private static final String user = "root";
-    private static final String password = "****";
+    private static final String password = "stuxnet";
     private static final String URL = "jdbc:mysql://localhost:3306/" + data_base;
 
     public Connection getConnection() {
